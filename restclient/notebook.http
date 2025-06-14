@@ -1,0 +1,29 @@
+###create all books
+
+POST http://localhost:3000/book
+Content-Type: application/json
+
+{
+   "title": "the begotten son",
+   "content":  "this book contain the history of a son who ",
+   "createdAt": "2023-10-01T12:00:00Z"
+}
+
+####  GET ALL BOOKS 
+GET http://localhost:3000/books
+
+
+### get one by id
+GET http://localhost:3000/books/1
+
+
+###update by id
+patch http://localhost:3000/books/1
+Content-Type: application/json
+
+
+{
+  "title" :"the reacher"
+}
+###delete book by id
+DELETE http://localhost:3000/books/1

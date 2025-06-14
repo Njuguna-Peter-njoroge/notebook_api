@@ -33,6 +33,6 @@ BEGIN
         createdAt = COALESCE(p_createdAt, books.createdAt)
       
     WHERE books.id = p_id
-    RETURNING books.id, books.name, books.content, books.createdAt
+    RETURNING books.id, books.name, books.content, books.createdAt;
 END;
 $$ LANGUAGE plpgsql;

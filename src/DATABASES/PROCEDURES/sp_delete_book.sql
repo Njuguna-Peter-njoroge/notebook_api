@@ -15,7 +15,7 @@ BEGIN
     
 
     DELETE FROM books WHERE books.id = p_id;
-    
-    RETURN QUERY SELECT true, 'book ' || deleted_id || ' has been permanently deleted'
+
+    RETURN QUERY SELECT true, 'book ' || deleted_id || ' has been deleted';
 END;
 $$ LANGUAGE plpgsql;

@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { Books } from 'src/Interfaces/books.interface'; 
-import { createBooksDto } from 'src/DTOS/create_books.dtos'; 
-import { updateBooksDto } from 'src/DTOS/update_books.dtos'; 
+import { Books } from 'src/Interfaces/books.interface';
+import { createBooksDto } from 'src/DTOS/create_books.dtos';
+import { updateBooksDto } from 'src/DTOS/update_books.dtos';
+import { DatabaseService } from 'src/DATABASES/connection.service';
 import {
   ConflictException,
   Injectable,
@@ -12,9 +14,6 @@ import {
 
 @Injectable()
 export class BooksService {
-  findByTitle() {
-    throw new Error('Method not implemented.');
-  }
   delete(id: number) {
     throw new Error('Method not implemented.');
   }
@@ -25,7 +24,7 @@ export class BooksService {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const result = await this.databaseService.query(
-        `SELECT * FROM SP_CREATE_BOOKS($1, $2, $3, $4, $5)`,
+        `SELECT * FROM sp_create_book($1, $2, $3, $4, $5)`,
         [
           createBooksDto.title,
           createBooksDto.content,
@@ -37,13 +36,12 @@ export class BooksService {
         throw new NotFoundException('Failed to create a book');
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return result.rows[0];
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       if (error.message.includes('already exists')) {
         throw new ConflictException(
-          `Book with ISBN ${createBooksDto.isbn} already exists`,
+          `Book with title ${createBooksDto.title} already exists`,
         );
       }
       console.error('Database error:', error);
@@ -56,7 +54,7 @@ export class BooksService {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const result = await this.databaseService.query(
-        `SELECT * FROM sp_get_all_books()`,
+        `SELECT * FROM sp_get_book()`,
       );
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -97,19 +95,15 @@ export class BooksService {
         [
           id,
           updateBooksDto.title,
-          updateBooksDto.author,
-          updateBooksDto.published_year,
-          updateBooksDto.isbn,
-          updateBooksDto.isAvailable,
+          updateBooksDto.content,
+          updateBooksDto.createdAt,
         ],
       );
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (result.rows.length === 0) {
         throw new NotFoundException(`Book with ID ${id} not found for update`);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return result.rows[0];
     } catch (error) {
       console.error('Database error:', error);
